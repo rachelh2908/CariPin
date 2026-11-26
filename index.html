@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CariPin</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    body {
+         background-color: #ffffff;
+         font-family: Arial, sans-serif; 
+         text-align: center; 
+         margin: 0; 
+         justify-content: space-between; 
+         font-size: 1.2rem;
+         min-height: 100vh;
+         box-sizing: border-box;
+         border: 25px solid transparent;
+         border-image-source: url("/static/images/Homepage\ background.png");
+         border-image-slice: 30;
+         border-image-repeat: round;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         padding: 40px 20px;}
+    #homepage, 
+    #signup { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        margin-top: auto; 
+        margin-bottom: auto; 
+        width: 100%;
+            }
+        [hidden] { 
+            display: none !important; 
+        }
+    img { 
+        max-width: 80%;
+        width: 300px;
+        height: auto;
+        margin-bottom: 10px;
+        }
+    h1 { 
+        font-size: 1.5rem; 
+        margin: 10px 0 8px 0; 
+        color: #0c8280; 
+        }
+    h2 { 
+        font-size: 1.5rem; 
+        margin: 0 0 20px 0; 
+        color:#0c8280;
+    }
+    .tagline { 
+        font-size: 1rem;  
+        color: #555555; 
+        max-width: 280px;
+        line-height: 1.4rem;
+        margin: 0 0 28px 0;
+        }
+    #topbar {
+        display:flex; 
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    #userprofile { 
+        color:#065958; 
+        font-weight: bold;
+        font-size: 1rem; 
+    }
+    #signup-button, 
+    #signup-form button { 
+        background-color:beige; 
+        color: #065958; 
+        border: 5px solid #1d8987; 
+        border-radius: 5px;
+        max-width: 280px;
+        width: 80%; 
+        height: 50px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;  
+        transition: background-color 0.15s, color 0.15s;                  
+        }
+
+    #signup-button:hover,
+    #signup-form button:hover { 
+        background-color: #065958; 
+        color: beige; 
+        }
+
+    #signup-button:focus-visible, 
+    #signup-form button:focus-visible { 
+        outline: 3px solid #0c8280; 
+        outline-offset: 3px; 
+        }
+
+    .setupconditionnote { 
+        font-size: 0.85rem; 
+        color: #065958; 
+        margin-top: 12px;                  
+        max-width: 280px;
+                
+         }
+
+    #signup-form { 
+        display: flex; 
+        flex-direction: column;
+        width: 100%; 
+        max-width:320px;
+        text-align: left;   
+        }
+    #signup-form label { 
+        font-size: 0.95rem;
+        margin: 14px 0 6px 0;
+        font-weight: bold;
+        color: #065958;
+  }
+
+    #signup-form input,
+    #signup-form select {
+    padding: 0 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #333333;
+    background-color: #ffffff;
+    border: 2px solid #1d8987;
+    border-radius: 5px;
+    width: 100%;
+    height: 32px;
+    box-sizing: border-box;
+}
+
+#signup-form input[readonly] {
+    background-color: #f0f7f7;
+    cursor: not-allowed;
+}
+
+#signup-form input:focus,
+#signup-form select:focus {
+    outline: 3px solid #0c8280;
+    border-color: beige;
+}
+
+#signup-form select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-image: url("/static/images/dropdown-arrow.png");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+    #signup-form button { 
+        align-self: center; 
+        margin-top: 26px; 
+    }
+#app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+#menu-button {
+    background: none;
+    border: 2px solid #1d8987;
+    color: #065958;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 240px;
+    background: beige;
+    padding: 70px 16px 16px 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10;
+}
+#sidebar button {
+    padding: 12px;
+    border: 3px solid #1d8987;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #065958;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#sidebar #backbutton { 
+   align-self: flex-start; 
+   padding: 6px 12px;
+   font-size: 0.85rem; 
+   margin-bottom: 16px; 
+}
+.card {
+    border: 4px solid #1d8987;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: left;
+    max-width: 350px;
+}
+#directory-list { text-align: left; max-width: 320px; }
+#directory-list h3 { color: #0c8280; margin: 18px 0 6px 0; }
+.service { border: 2px solid #1d8987; border-radius: 8px; padding: 10px; margin-bottom: 10px; font-size: 1rem; }
+.service a { color: #065958; font-weight: bold; }
+
+#view-edit { 
+    width:100%; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+} 
+#edit-form { 
+    display: flex; 
+    flex-direction: column;
+    width: 100%; 
+    max-width: 320px; 
+    text-align: left; 
+}
+#edit-form label { 
+    font-size: 0.95rem; 
+    margin: 14px 0 6px 0; 
+    font-weight: bold; 
+    color: #065958;
+}
+
+#edit-form input, #edit-form select { 
+    padding: 0 12px; 
+    font-size: 1rem; 
+    font-family: inherit; 
+    color: #333333; 
+    background-color: #ffffff; 
+    border: 2px solid #1d8987; 
+    border-radius: 5px; 
+    width: 100%; 
+    height: 32px; 
+    box-sizing: border-box;
+}
+#edit-form input[readonly], 
+#edit-form select:disabled { 
+    background-color: #f0f7f7; 
+    cursor: not-allowed;
+}
+#edit-form input:focus, 
+#edit-form select:focus {
+    outline: 3px solid #0c8280; 
+    border-color: beige; 
+ }
+#edit-form select{ 
+    appearance: none; 
+    -webkit-appearance: none; 
+    padding-right: 40px; 
+    background-image: url("/static/images/dropdown-arrow.png"); 
+    background-repeat: no-repeat; 
+    background-position: right 14px center; 
+}
+#edit-form select:not(:disabled) { 
+    cursor: pointer;
+} 
+#edit-form button { 
+    align-self: center; 
+    margin-top: 26px; 
+    background-color: beige; 
+    color: #065958; 
+    border: 5px solid #1d8987; 
+    border-radius: 5px; 
+    max-width: 280px;
+    width: 80%; 
+    height: 50px; 
+    font-size: 1rem; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: background-color 0.15s, color 0.15s; 
+}
+#edit-form button:hover { 
+    background-color: #065958; color: beige; 
+}
+#edit-form button:focus-visible { 
+    outline: 3px solid #0c8280; 
+    outline-offset: 3px;
+}
+#view-map{
+    width: 100%; 
+    max-width: 500px; 
+}
+#view-map h3 { 
+    color:#0c8280; 
+    margin: 18px 0 6px 0; 
+}
+#map { 
+    width:100%; 
+    height: 380px; 
+    border:3px solid #1d8987; 
+    border-radius: 8px;
+    position: relative; 
+    z-index: 0; 
+}
+#map.placing { 
+    cursor: crosshair; 
+}
+.map-controls { 
+    display: flex; 
+    gap: 8px; 
+    margin-bottom: 10px; 
+}
+.map-controls select, .map-controls input { 
+    height: 36px; 
+    border: 2px solid #1d8987; 
+    border-radius: 5px; 
+    padding: 0 8px; 
+    font-size: 0.9rem; 
+    min-width: 0; 
+}
+.map-controls select { 
+    flex: 1; 
+}
+.map-controls input { 
+    flex: 1.5; 
+}
+#placepin-button { 
+    width: 100%; 
+    margin-bottom: 10px; 
+    padding: 10px; 
+    border: 3px solid #1d8987; 
+    border-radius: 5px; 
+    background: beige; 
+    color: #065958;
+    font-weight: bold; 
+    font-size: 1rem; 
+    cursor: pointer; 
+}
+#placepin-button.active { 
+    background: #065958; 
+    color: beige; 
+}
+.pin { 
+    font-size: 24px; 
+    line-height: 30px; 
+    text-align: center; 
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); 
+}
+#nearby-list { 
+    text-align: left; 
+}
+#nearby-note { 
+    font-size: 0.85rem; 
+    color: #065958; 
+}
+    footer { 
+        font-size: 0.85rem; 
+             color: #065958; 
+             padding-top: 20px;
+         }
+   </style>
+</head>
+<body> 
+    <section id = "homepage">
+        <img src = "/static/images/CariPin.png" alt = "CariPin Logo" style = "width: 300px; height: auto;">
+        <p>Welcome to CariPin!</p> 
+        <p style ="font-style: italic;" class="tagline">Pin what's happening.</p>
+        <button id = "signup-button" style = "width: 200px; height: 50px;">Sign Up</button>
+        <p class="setupconditionnote"> Quick one-time setup</p>   
+    </section> 
+    
+<section id = "signup" hidden> 
+    <h2 id ="signuptitle">Sign Up</h2>
+    <form id = "signup-form">
+        <label for = "firstname">First Name</label>
+        <input id = "firstname" name="firstname" required>
+        
+        <label for = "lastname">Last Name</label>
+        <input id = "lastname" name="lastname" required>
+
+        <label for = "username">Username</label>
+        <input id = "username" name="username" required>
+
+        <label for = "dateofbirth">Date of Birth</label>
+        <input id = "dateofbirth" name="dateofbirth" type="date" min="1900-01-01" max="" required>
+
+        <label for="age">Age</label>
+        <input id = "age" name="age" type="number" readonly required> 
+
+        <label for = "gender">Gender</label>
+        <select id = "gender" name="gender" required onchange="document.getElementById('othergender').style.display = this.value === 'Other' ? 'block' : 'none'">
+            <option value = "">Select your gender</option>
+            <option value = "Male">Male</option>
+            <option value = "Female">Female</option>
+            <option value = "Other">Other</option>
+        </select>
+        <input type = "text" id="othergender" name="othergender" placeholder="Please specify your gender" style="display:none;">
+
+        <label for = "approximateheight">Approximate Height (cm)</label>
+        <input id ="approximateheight" name="approximateheight" type="number" min="1" required>
+        
+        <label for = "approximateweight">Approximate Weight (kg)</label>
+        <input id = "approximateweight" name="approximateweight" type="number" min="1" required>
+
+        <label for = "country">Country</label>
+        <select id = "country" name = "country" required> 
+            <option value = "">Select a country</option>
+            <option value = "Jamaica">Jamaica</option>
+            <option value = "Montserrat">Montserrat</option>
+            <option value = "Grenada">Grenada</option>
+        </select>
+
+    <div id = "parishContainer" style = "display:none;"> 
+        <label for= "parish">Parish</label>
+        <select id = "parish" name = "parish"></select>
+    </div>
+
+    <button type = "submit" id="signup-submit">Sign Up</button>
+    </form>
+</section>
+
+<section id="app" hidden>
+    <div id="topbar">
+         <button type="button" id="menu-button">☰ Menu</button>
+        <span id="userprofile"></span>
+    </div>
+
+    <nav id="sidebar" hidden>
+        <button type="button" id="backbutton">Back</button>
+        <button type ="button" data-view="view-map">Pin It</button>
+        <button type="button" data-view="view-directory">Emergency Services</button>
+        <button type="button" data-view="view-card">My Safety Card</button>
+        <button type="button" id="edit-info">Edit My Information</button>
+        <button type="button" id="reset">Reset my Information</button>
+    </nav>
+
+    <div id="view-directory" class="view" hidden>
+        <h2>Emergency Services</h2>
+        <p id="directory-place"></p>
+        <div id="directory-list"></div>
+    </div>
+
+    <div id="view-card" class="view" hidden>
+        <h2>My Safety Card</h2>
+        <div class="card">
+            <p><strong id="card-name"></strong></p>
+            <p>Username: <span id="card-username"></span></p>
+            <p>Age: <span id="card-age"></span> | DOB: <span id="card-dob"></span></p>
+            <p>Gender: <span id="card-gender"></span></p>
+            <p>Height: <span id="card-height"></span> cm | Weight: <span id="card-weight"></span> kg</p>
+            <p>Location: <span id="card-location"></span></p>
+        </div>
+    </div>
+    <div id="view-edit" class="view" hidden> 
+        <h2>Edit My Information</h2>
+        <form id="edit-form"> 
+        
+            <label for="edit-firstname">First Name </label>
+            <input id="edit-firstname" readonly> 
+        
+            <label for="edit-lastname">Last Name</label>
+            <input id="edit-lastname" readonly> 
+    
+            <label for="edit-username">Username</label>
+            <input id="edit-username" readonly> 
+
+            <label for="edit-dob">Date of Birth</label>
+            <input id="edit-dob" readonly> 
+
+            <label for="edit-age">Age</label>
+            <input id="edit-age" readonly>
+
+            <label for="edit-gender">Gender</label>
+            <select id="edit-gender" disabled> 
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <input id="edit-othergender" readonly style="display:none;">
+
+            <label for="edit-height">Height</label>
+            <input id="edit-height" readonly> 
+
+            <label for="edit-weight">Weight</label>
+            <input id="edit-weight" readonly> 
+
+            <label for="edit-country">Country</label>
+            <select id= "edit-country" required> 
+                <option value="Jamaica">Jamaica</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Grenada">Grenada</option>
+            </select>
+
+            <label for="edit-parish">Parish</label>
+            <select id="edit-parish" required></select>      
+            
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+<div id="view-map" class="view" hidden> 
+    <h2>Pin It</h2>
+    <p id="map-place" ></p>
+    <div class="map-controls"> 
+        <select id="hazard-type"></select>
+        <input id="hazard-note"  placeholder="Short note (optional)" maxlength="100">
+    </div>
+    <button type="button" id="placepin-button">📍Add a pin </button>
+    <div id="map"></div>
+
+    <h3>Nearest help</h3>
+    <p id="nearby-note"></p>
+    <div id="nearby-list"></div>
+</div>
+</section>
+<footer> 
+        2026-Team CariPin
+    </footer>
+
+<script> 
+    const homepage = document.getElementById("homepage"); 
+    const signup = document.getElementById("signup"); 
+
+    document.getElementById("signup-button").addEventListener("click", () => { 
+        homepage.hidden = true; 
+        signup.hidden = false; 
+    });
+
+    const dobInput = document.getElementById("dateofbirth"); 
+    const ageInput = document.getElementById("age");
+    const today = new Date(); 
+    const maxDate = new Date(today.getFullYear() - 12, today.getMonth(), today.getDate());
+    const minDate = new Date(today.getFullYear() - 101, today.getMonth(), today.getDate()); 
+
+    dobInput.max = maxDate.toISOString().split("T")[0]; 
+    dobInput.min = minDate.toISOString().split("T")[0];
+
+    dobInput.addEventListener("change", () => { 
+           ageInput.value = dobInput.value ? calculateAge(dobInput.value):"";
+        }); 
+    
+    function calculateAge(dobString) { 
+        const dob = new Date(dobString); 
+        const now = new Date();
+        let age = now.getFullYear() - dob.getFullYear();
+        const hadBirthday = 
+            now.getMonth() > dob.getMonth() ||
+            (now.getMonth() === dob.getMonth() && now.getDate() >= dob.getDate()); 
+        if (!hadBirthday) {
+            age --; 
+        }
+        return age;
+    } 
+    const country = document.getElementById("country"); 
+    const parishContainer = document.getElementById("parishContainer");
+    const parish = document.getElementById("parish"); 
+
+    const parishes = { 
+        "Jamaica": ["Clarendon", "Hanover", "Kingston & St. Andrew", "Manchester", "Portland", "St. Ann", "St. Catherine", "St. Elizabeth", "St. James", "St. Mary", "St. Thomas", "Trelawny", "Westmoreland"],
+        "Montserrat" : ["Saint Peter", "Saint Anthony", "Saint George"], 
+       "Grenada" : ["Saint Andrew", "Saint David", "Saint George", "Saint John", "Saint Mark", "Saint Patrick", "Carriacou", "Petite Martinique"]
+    }; 
+    const directory = {
+    Grenada: {
+        codedial: "+1473",
+        VerifiedLast: "2026-11-18",
+        emergencyline: { all: "911", policeline: "444-1958" },
+        Parishes: {
+            "Saint George": {
+                police: [
+                    { name: "Central Police Station", location: "Carenage", lat: 12.0505, lng: -61.7493, phones: ["440-2245", "440-2246"] },
+                    { name: "St. Paul's Police Station", location: "St. Paul's", lat: 12.0454, lng: -61.7203,  phones: ["440-3224", "435-3917"] },
+                    { name: "South St. George Police Station", location: "Morne Rouge", lat: 12.0214, lng: -61.7656, phones: ["444-4454", "439-4483", "435-1537"] },
+                ],
+                fire: [
+                    { name: "Fire Department HQ", location: "Carenage", lat: 12.0508, lng: -61.7493, phones: ["440-3921", "440-2112"] },
+                    { name: "MBIA Crash, Fire and Rescue", location: "Maurice Bishop International Airport", lat: 12.0074, lng: -61.7859, phones: ["440-4149"] }
+                ],
+                hospitals: [
+                    { name: "General Hospital", location: "Grand Etang Road, St. George's", lat: 12.0484, lng: -61.7547,  phones: ["440-2051", "440-2081"], ambulance: "434" },
+                ]
+            },
+            "Saint Andrew": {
+                police: [
+                    { name: "Grenville Police Station", location: "Victoria Street, Grenville", lat: 12.1224, lng: -61.6224, phones: ["442-6161"] },
+                    { name: "Birchgrove Police Station", location: "Birchgrove", lat: 12.1134, lng: -61.6717, phones: ["438-5860", "438-5861"] }
+                ],
+                fire: [
+                    { name: "Grenville Fire Station", location: "Wharf Lane, Grenville", lat: 12.1222, lng: -61.6224,  phones: ["442-6161"] }
+                ],
+                hospitals: [
+                    { name: "Princess Alice Hospital", location: "Grenville", lat: 12.1328, lng: -61.6525, phones: ["442-7251"], ambulance: "724" }
+                ]
+            },
+            "Saint David": {
+                police: [
+                    { name: "St. David's Police Station", location: "Petite Esperance", lat: 12.0490, lng: -61.6676, phones: ["444-7070", "444-6224"] }
+                ],
+                fire: [],
+                hospitals: []
+            },
+            "Saint John": {
+                police: [
+                    { name: "Gouyave Police Station", location: "Central Depradine Street, Gouyave", lat: 12.1707, lng: -61.7318,  phones: ["444-8225"] },
+                    { name: "Grand Roy Police Station", location: "Grand Roy", lat: 12.1327, lng: -61.7460, phones: ["444-9292", "444-8225"] }
+                ],
+                fire: [
+                    { name: "Gouyave Fire Branch", location: "Gouyave Police Station", lat: 12.1707, lng: -61.7318, phones: ["444-8224"], note: "Uses the police station line" }
+                ],
+                hospitals: []
+            },
+            "Saint Mark": {
+                police: [
+                    { name: "Victoria Police Station", location: "Victoria", lat: 12.1958, lng: -61.7060,  phones: ["444-8424"] },
+                    { name: "Union Police Station", location: "Union", lat: 12.2042, lng: -61.6698, phones: ["442-9225", "442-0276"] }
+                ],
+                fire: [],
+                hospitals: []
+            },
+            "Saint Patrick": {
+                police: [
+                    { name: "Sauteurs Police Station", location: "Sauteurs", lat: 12.2247, lng: -61.6383, phones: ["442-9224", "442-0544", "442-1765"] },
+                    { name: "Hermitage Police Station", location: "Hermitage", lat: 12.1766, lng: -61.6354, phones: ["442-9445"] }
+                ],
+                fire: [
+                    { name: "Sauteurs Fire Branch", location: "Sauteurs", lat:12.2195, lng: -61.6347, phones: ["442-7328"] }
+                ],
+                hospitals: []
+            },
+            "Carriacou": {
+                police: [
+                    { name: "Carriacou Police Station", location: "Carriacou", lat: 12.4828, lng: -61.4581,  phones: ["443-8762"] }
+                ],
+                fire: [],
+                hospitals: [
+                    { name: "Princess Royal Hospital", location: "Bellair, Carriacou", lat: 12.4891, lng: -61.4455, phones: ["443-7400"], ambulance: "774" }
+                ]
+            },
+            "Petite Martinique": {
+                police: [
+                    { name: "Petite Martinique Police Station", location: "Petite Martinique", lat: 12.5180, lng: -61.3850, phones: ["443-9044"] }
+                ],
+                fire: [],
+                hospitals: []
+            }
+        }
+    },
+    Jamaica: {
+    codedial: "+1876",
+    VerifiedLast: "2026-11-18",
+    emergencyline: { all: null, policeline: "119", ambulance: "110", fire: "110" },
+    Parishes: {
+        "Clarendon": { police: [ 
+                    {name: "May Pen Police Station (divisional HQ)", location:"11 Brooks Avenue, May Pen", lat:17.9654, lng:-77.2396,phones:["(876) 986-9524"]},
+                    {name: "Hayes Police Station", location:"Hayes Main Road, Hayes, Clarendon", lat:17.8756, lng:-77.2417,phones:[" (876) 986-5130 "]},
+                    {name: "Chapelton Police Station", location:"Chapelton Main Road, Chapelton", lat:18.0833,lng:-77.2663,phones:[" (876) 987-2244"]},
+                    {name: "Frankfield Police Station", location:" Frankfield Main Road (Main Street), Frankfield", lat:18.1454, lng:-77.3643, phones:["(876) 904-4507"]},
+                    {name: "Lionel Town Police Station", location:"Bustamante Drive, Lionel Town", lat:17.8084, lng:-77.2426,phones:[" (876) 986-3233"]},
+                    {name: "Four Paths Police Station", location:"Muirhead Ave, Four Paths", lat:17.9695, lng:-77.2939, phones:["(876) 987-0429"]},
+                    {name: "Mocho Police Station", location:"Mocho Main Road / Brixton Hill ", lat:18.0277, lng:-77.3289, phones:["(876) 786-0826 "]},
+                    {name: "Rock River Police Station", location:"Rock River Main Road", lat:18.0710,lng:-77.2150, phones:["(876) 350-8193"]},
+                    {name: "Crofts Hill Police Station", location:"Crofts Hill Main Road, Crofts",lat:18.1346, lng:-77.2068, phones:[" (876) 966-7333"]},
+                    {name: "Milk River Police Station", location:"Scotts Main Road,Milk River", lat:17.8889,lng:-77.3527, phones:["(876) 610-6372", "(876) 404-5170"]}
+
+
+            ], 
+            fire: [{name: "May Pen Fire Station", location:"4 Brooks Avenue, May Pen", lat:17.9739 , lng:-77.2438,phones:["(876) 986-2192"]},
+                    {name: "Frankfield Fire station", location:"Main Street (B4), Frankfield", lat:18.1459,lng:-77.3643, phones:["(876) 904-4532"]}
+            ], hospitals: [
+
+                    {name:"May Pen Hospital", location:"1 Muirhead Avenue, Denbigh, May Pen", lat:17.9739, lng:-77.26078, phones:["(876) 986-2528"]},
+                    {name:"Chapelton Community Hospital", location:"1 Benton Avenue, Chapelton",lat:18.0831, Lng:-77.2691, phones:["(876) 987-2215", "(876) 676-6083"]},
+                    {name:"Lionel Town Community Hospital", location:" Bustamante Drive in Lionel Town, Clarendon", lat:17.8080, lng:-77.2414, phones:["(876) 986-3226", " (876) 613-8453"]},
+                    {name:"Percy Junor Hospital", location:"57 Main Street, Spalding", lat:18.1551, lng:-77.4647, phones:["(876) 964-2322 ", "(876) 964-2222"]}
+                ]
+},
+        "Hanover": { police: [
+                        {name: "Lucea police Station (divisional HQ)", location:"Seaview Dr, Lucea", lat: 18.4454, lng: -78.1722, phones:["(876) 956-2333"]},
+                        {name: "Sandy Bay Police Station", location:" Alice Eldemire Dr, Sandy Bay", lat: 18.4511, lng: -78.0752, phones:["(876)953-5312"]},
+                        {name: "Green Island Police Station ", location:"Alice Eldemire Dr, Green Island", lat:18.3883, lng: -78.2748, phones:["(876)956-9200"]},
+                        {name: "Hopewell Police Station", location:" Pond Piece, Hopewell", lat: 18.4546, lng: -78.0204, phones:["(876) 420-3921"]},
+                        {name: "Ramble Police Station", location:" Ramble Main Road, Ramble", lat: 18.3317, lng: -77.99643,  phones:["(876) 822-5211"]},
+                    ],
+                    fire: [
+                        {name:"Jamaica Fire Brigade", location: " Cressys Lane, Lucea", lat: 18.4472, lng: -78.1725, phones:["(876) 956-2220","(876) 956-2187"]},
+
+
+                    ],
+                    hospitals: [
+                        {name:"Noel Holmes Hospital", location:" Fort Charlotte Drive, Lucea", lat: 18.4518, lng: -78.1680, phones:[" (876) 956-2733"]},
+                    ]
+                },
+
+        "Kingston & St. Andrew": { "police": [ 
+                        {name: "Police HQ", location: "101-105 Old Hope Road", lat: 18.0149, lng: -76.7716, phones: ["(876) 927-7681", "(876) 978-7462"]},
+                        {name: "Half Way Tree Police Station", location: "142 Maxfield Avenue", lat: 18.0085, lng: -76.7988,  phones: ["(876) 926-8184", "(876) 926-8185"]},
+                        {name: "New Kingston Police Station", location: "77 Knutsford Boulevard", lat: 18.0060, lng: -76.7874, phones: ["(876) 926-3508", "(876) 908-4980"]},
+                        {name: "Matilda's Corner Police Station", location: "115 Old Hope Road", lat: 18.0198, lng: -76.7691,   phones: ["(876) 978-6003"]},
+                        {name: "Constant Spring Police Station", location: "1 Cassava Piece Road", lat: 18.0459, lng: -76.7954,  phones: ["(876) 924-1421"]},
+                        {name: "Kingston Central Police Station", location: "50 East Queen Street", lat: 17.9712, lng: -76.7905,  phones: ["(876) 922-0308", "(876) 922-4089"]},
+                        {name: "Hunts Bay Police Station", location: "236 Marcus Garvey Drive", lat: 17.9972, lng: -76.8252, phones: ["(876) 923-7111", "(876) 923-7112"]},
+                        {name: "Allman Town Police Station", location: "6 Great Georges Street", lat: 17.9809, lng: -76.7856, phones: ["(876) 922-2842"]},
+                        {name: "Denham Town Police Station", location: "83 Spanish Town Road", lat: 17.9781, lng: -76.8029,  phones: ["(876) 923-6624", "(876) 922-6441"]},
+                        {name: "Elletson Road Police Station", location: "16 Lower Elletson Road", lat: 17.9691, lng: -76.7784,  phones: ["(876) 928-1261"]},
+                        {name: "Fletchers Land Police Station", location: "7 New Cross Street", lat: 17.9796, lng: -76.7914, phones: ["(876) 922-2541"]},
+                        {name: "Franklyn Town Police Station", location: "35 Franklyn Avenue", lat: 17.9780, lng: -76.7756, phones: ["(876) 928-9656"]},
+                        {name: "Gold Street Police Station", location: "9 Gold Street", lat: 17.9680, lng: -76.7859,  phones: ["(876) 922-3637"]},
+                        {name: "Harbour View Police Station", location: "16 Sargasso Avenue", lat: 17.9500, lng: -76.7156, phones: ["(876) 928-6012", "(876) 928-6001"]},
+                        {name: "Rockfort Police Station", location: "145 Windward Road", lat: 17.9741, lng: -76.7569,  phones: ["(876) 922-2941"]},
+                        {name: "Rollington Town Police Station", location: "20 Giltress Street", lat: 17.9781, lng: -76.7666,   phones: ["(876) 922-2693", "(876) 928-9130"]},
+                        {name: "Trench Town Police Station", location: "27 Seventh Street", lat: 17.9850, lng: -76.8023,  phones: ["(876) 948-8243", "(876) 923-8243"]},
+                        {name: "Vineyard Town Police Station", location: "19 Deanery Avenue", lat: 17.9892, lng: -76.7680, phones: ["(876) 922-3184", "(876) 938-2456"]},
+                        {name: "Seaview Gardens Police Station", location: "Seaview Gardens, Kingston", lat:18.007, lng: -76.8414, phones: ["(876) 901-9423"]},
+                        {name: "Darling Street Police Station", location: "Darling Street, Kingston", lat: 17.9706, lng: -76.7980, phones: ["(876) 948-6773", "(876) 948-1366"]},
+                        {name: "Marine Division", location: "15 Newport E, Kingston", lat: 17.9659, lng: -76.8030,  phones: ["(876) 922-3176"]},
+                        {name: "Elleston Road Police Station", location: "16 Lower Elletson Road", lat: 17.9691, lng: -76.7788,  phones: ["(876) 759-3959"]},
+                    ],
+                    "fire": [
+                        {name: "Half Way Tree Fire Station", location: " 146Maxfield Avenue, Kingston 10", lat: 18.010, lng: -76.7981, phones: ["(876) 926-8165", "(876) 926-8166"]},
+                        {name: "York Park Fire Station", location: "167 Orange Street", lat: 17.9814, lng: -76.7910, phones: ["(876) 922-2121", "(876) 922-2122"]},
+                        {name: "Trench Town Fire Station", location: "Trench Town, Kingston", lat: 17.9818, lng: -76.8061, phones: ["(876) 923-5970"]},
+                        {name: "Rollington Town Fire Station", location: "Rollington Town, Kingston", lat: 17.9782, lng: -76.7657, phones: ["(876) 928-1063"]},
+                        {name: "Port Royal Fire Station", location: "Port Royal, Kingston", lat: 17.9386, lng: -76.8414, phones: ["(876) 967-8054", "(876) 967-8055"]},
+                        {name: "Fireboat Station", location: "Kingston Harbour", lat: 17.9656, lng: -76.8021, phones: ["(876) 922-7018"]},
+                        {name: "Stony Hill Fire Station", location: "Stony Hill, St. Andrew", lat: 18.0825, lng: -76.7954, phones: ["(876) 942-3053", "(876) 942-3055"]},
+                    ],
+                    "hospitals": [
+                        {name: "Kingston Public Hospital", location: "North Street, Kingston", lat: 17.9754, lng: -76.7938, phones: ["(876) 922-0210-9"]},
+                        {name: "Victoria Jubilee Hospital", location: "North Street, Kingston", lat: 17.9774, lng: -76.7952, phones: ["(876) 922-0210-9"]},
+                        {name: "University Hospital of the West Indies", location: "Mona, Kingston 7", lat: 18.0115, lng: -76.7425, phones: ["(876) 927-1620", "(876) 927-1621"]},
+                        {name: "Bustamante Hospital for Children", location: "Arthur Wint Drive, Kingston 5", lat: 17.9997, lng: -76.7781,  phones: ["(876) 968-0300"]},
+                        {name: "National Chest Hospital", location: "35½ Barbican Road, Kingston 6", lat: 18.0231, lng: -76.7594, phones: ["(876) 927-0000", "(876) 970-0655"]},
+                        {name: "Bellevue Hospital (psychiatric)", location: "16½ Windward Road, Kingston", lat: 17.9700, lng: -76.7719,  phones: ["(876) 928-1380"]},
+            ]
+},
+
+        "Manchester": { police: [ {name:"Mandeville Police Station", location:" 4-6 Park Crescent, Mandeville, Manchester", lat:18.0397, lng:-77.5073, phones:["(876) 962-2250"]},
+                    {name:"Williamsfield Police Station", location:" Old Mandeville Road, Williamsfield", lat:18.0706, lng:-77.4652, phones:["(876) 963-4225"]},
+                    {name:"Porus Police Station", location:"Porus Main Road (A2), Porus ", lat:18.0344, lng:-77.4112, phones:["(876) 904-1577"]},
+                    {name:"Christiana Police Station", location:"Main Road (B 5), Christiana ", lat:18.1759, lng:-77.4915, phones:["(876) 964-2250"]},
+                    {name:"Cross Keys Police Station", location:"  Knockpatrick, Manchester", lat:17.9004, lng:-77.5027, phones:[" (876) 965-7253 "]},
+                    {name:"Asia Police Station", location:" Asia, Manchester, Warwick", lat:17.9176, lng:-77.4227, phones:["(876) 855-1105 "]}
+            ], 
+            fire: [  {name:"Mandeville Fire Station", location:" Brigade Crescent / Brigade Street, Mandeville ", lat:18.0408, lng:-77.5082, phones:["(876) 962-2588", "(876) 962-5935 "]},
+                     {name:"Christiana Fire Station", location:" Main Street (B5), Christiana, Manchester", lat:18.1722, lng:-77.4909, phones:["(876) 964-2444"]}
+            ], 
+            hospitals: [  {name:"Mandeville Regional Hospital ", location:" 32 Hargreaves Avenue, Mandeville ",lat:18.0428, lng:-77.5091, phones:["(876) 962-2067"]}
+] },
+        "Portland": { police: [  
+        {name:"Port Antonio Police Station (divisional HQ)", location:"Harbour Street, Port Antonio", lat: 18.1791, lng: -76.4510,phones:["(876) 993-2527"]},
+        {name:"Buff Bay Police Station", location:"Russell Avenue, Buff Bay", lat: 18.2338, lng: -76.6566,  phones:["(876) 996-1497"]},
+        {name:"Castle Police Station", location:"Castle Main Road, Castle", lat: 18.1376, lng: -76.3371,phones:["(876) 913-1001"]},
+        {name:"Hope Bay Police Station", location:"Main Street, Hope Bay", lat: 18.2032, lng: -76.5601,  phones:["(876) 913-0202"]},
+        {name:"Manchioneal Police Station", location:"Manchioneal Main Road, Manchioneal", lat: 18.0337, lng: -76.2788, phones:["(876) 993-6041"]},
+        {name:"Mill Bank Police Station", location:"Mill Bank, Portland", lat: 18.0501, lng: -76.4112,  phones:["(876) 855-1057"]},
+        {name:"Orange Bay Police Station", location:"Orange Bay Main Road, Orange Bay", lat: 18.2204, lng: -76.6037, phones:["(876) 549-0735"]},
+        {name:"San San Police Station", location:"Gulf Sea Main Road, San San", lat: 18.1715, lng: -76.4025, phones:["(876) 993-7315"]},
+        {name:"Spring Hill Police Station", location:"Spring Hill Main Road, Spring Hill", lat: 18.1126, lng: -76.7140,phones:["(876) 564-2512"]},
+        {name:"Marine Police Station", location:"2-3 Myers Wharf Road, Newport East, Port Antonio", lat:18.1798, lng: -76.4531, phones:["(876) 922-3176"]},
+
+
+    ],
+    fire: [
+        {name:"Port Antonio Fire Station", location:"2 West Baptist Avenue, Port Antonio", lat: 18.1776, lng: -76.4541, phones:["(876) 993-3041"]},
+        {name:"Buff Bay Fire Station", location:"A4 Main Road, Buff Bay", lat: 18.2329, lng: -76.6589, phones:["(876) 996-1501"]},
+
+
+    ],
+    hospitals: [
+        {name:"Port Antonio Hospital", location:"Naylors Hill, Port Antonio", lat: 18.1766, lng: -76.4549,phones:["(876) 993-2646"]},
+        {name:"Buff Bay Hospital", location:"Buff Bay, Portland", lat: 18.2335, lng: -76.6573, phones:["(876) 996-1478"]}
+    ]
+},
+
+        "St. Ann": { "police": [
+                    {name: "St. Ann Division HQ", location: "8 Main Street", lat: 18.4360, lng: -77.1994, phones: ["(876) 972-2373", "(876) 972-7452"]},
+                    {name: "St. Ann's Bay Police Station", location: "3 Braco Street", lat: 18.4360, lng: -77.1997,  phones: ["(876) 972-2211"]},
+                    {name: "Ocho Rios Police Station", location: "Evelyn Street, Ocho Rios", lat: 18.4085, lng: -77.1023,  phones: ["(876) 974-2533", "(876) 974-2469"]},
+                    {name: "Brown's Town Police Station", location: "10 Main Street, Brown's Town", lat: 18.3920, lng: -77.3688,  phones: ["(876) 975-2233"]},
+                    {name: "Discovery Bay Police Station", location: "102 Discovery Bay Main Road, Discovery Bay", lat: 18.4601, lng: -77.4007,  phones: ["(876) 973-2233"]},
+                    {name: "Moneague Police Station", location: "44 Main Street, Moneague", lat: 18.2724, lng: -77.1160, phones: ["(876) 973-0451"]},
+                    {name: "Runaway Bay Police Station", location: "Runaway Bay Main Road, Runaway Bay", lat: 18.4633, lng: -77.3347,  phones: ["(876) 973-7057"]},
+                    {name: "Alexandria Police Station", location: "Alexandria Main Road, Alexandria", lat: 18.3067, lng: -77.3520, phones: ["(876) 975-1016"]},
+                    {name: "Bamboo Police Station", location: "Clay Ground Main Road, Bamboo", lat:18.3918, lng: -77.2654, phones: ["(876) 972-6237"]},
+                    {name: "Claremont Police Station", location: "Claremont, St. Ann", lat: 18.3319, lng: -77.1757,  phones: ["(876) 972-3244"]},
+                    {name: "Cave Valley Police Station", location: "Cave Valley Main Road, Cave Valley", lat: 18.2263, lng: -77.3666,  phones: []},
+                    {name: "Watt Town Police Station", location: "Watt Town Main Road, Watt Town", lat: 18.3060, lng: -77.4105,  phones: []},
+                ],
+                "fire": [
+                    {name: "St. Ann's Bay Fire Station", location: "St. Ann's Bay", lat: 18.4371, lng: -77.1998, phones: ["(876) 972-2322"]},
+                    {name: "Ocho Rios Fire Station", location: "Ocho Rios", lat: 18.4010, lng: -77.1002,  phones: ["(876) 974-2317"]},
+                    {name: "Brown's Town Fire Station", location: "Brown's Town", lat: 18.3970, lng: -77.3673, phones: ["(876) 975-2316"]},
+                ],
+                "hospitals": [
+                    {name: "St. Ann's Bay Regional Hospital", location: "Seville Road, St. Ann's Bay", lat: 18.4373, lng: -77.2090,  phones: ["(876) 972-2272", "(876) 972-2273", "(876) 972-0150"]},
+                    {name: "Alexandria Community Hospital", location: "Alexandria", lat: 18.3067, lng: -77.3509,  phones: ["(876) 975-1007"]},
+                ]
+
+
+            },
+        "St. Catherine": { police: [
+        {name:"Spanish Town Police Station (CIB)", location:"Burke Road, Spanish Town", lat: 17.9916, lng: -76.9497,phones:["(876) 984-2305"]},
+        {name:"Old Harbour Police Station", location:"8 South Street, Old Harbour", lat: 17.9388, lng: -77.1125,phones:["(876) 983-2255"]},
+        {name:"Bog Walk Police Station", location:"Kent Village, Bog Walk", lat:18.1039, lng: -77.0058, phones:["(876) 708-2081"]},
+        {name:"Linstead Police Station", location:"1 Rodney Hall Road, Linstead", lat:18.1344, lng: -77.0314, phones:["(876) 985-2285"]},
+        {name:"Central Village Police Station", location:"Mandela Highway, Central Village", lat: 17.9976, lng: -76.9208, phones:["(876) 984-2644"]},
+
+
+    ],
+    fire: [
+        {name:"Spanish Town Fire Station", location:"White Church Street, Spanish Town", lat: 17.9923, lng: -76.9522, phones:["(876) 984-2251"]},
+        {name:"Old Harbour Fire Station", location:"South Street, Old Harbour", lat: 17.9362, lng: -77.1095, phones:["(876) 983-2276"]},
+        {name:"Waterford Fire Station", location:"Waterford Parkway, Waterford", lat: 17.9840, lng: -76.8674, phones:["(876) 988-7488"]},
+        {name:"Linstead Fire Station", location:"Linstead, St. Catherine", lat: 18.1468, lng: -77.0338, phones:["(876) 985-2333"]},
+
+
+    ],
+    hospitals: [
+        {name:"Spanish Town Hospital", location:"Burke Road, Spanish Town", lat: 17.9927, lng: -76.9471, phones:["(876) 984-3035"]},
+        {name:"Linstead Hospital", location:"Rodney Hall Road, Linstead",lat: 18.1334, lng: -77.0308,  phones:["(876) 985-2241"]}
+    ]
+},
+
+        "St. Elizabeth": { police: [ 
+                        {name:"Black River Police Station", location:"82 High Street", lat: 18.0250, lng: -77.8491, phones:["(876) 965-9306"]},
+                        {name:"Santa Cruz Police Station", location:" 32 Coke Drive", lat: 18.0507, lng: -77.6988, phones:[" (876) 966-2289"]},
+                        {name:"Junction Police Station", location:"Junction / Top Hill, St. Elizabeth", lat: 17.9092, lng: -77.6067, phones:["(876) 607-8239", "(876) 965-8475"]},
+                        {name: "Lacovia Police Station", location:"Burton Main Street, Lacovia, St. Elizabeth", lat: 18.0746, lng: -77.7568, phones:["(876) 320-9132", "(876) 966-6844"]},
+                        {name: "Balaclava Police Station", location:" Balaclava Main Road, Balaclava, St. Elizabeth", lat: 18.1724, lng: -77.6452, phones:["(876) 963-2109 ", "(876) 422-9667"]},
+                        {name: "Siloah Police Station", location:" Siloah Main Road (B6), Siloah ", lat: 18.1695, lng: -77.7087,  phones:["( 876) 963-9564"]},
+                        {name: "New Market Police Station", location:" Lewisville Main Road, New Market ", lat: 18.1487, lng: -77.9043, phones:[" (876) 610-6219"]},
+                        {name: "Black River CIB (criminal investigations)", location:" 3 North Street, Black River, St. Elizabeth", lat: 18.0242, lng: -77.8492,  phones:["(876) 965-2026 "]},
+                    ],
+                    fire: [
+                        {name: "Black River Fire Station (divisional HQ)", location:"5 Brigade Street", lat: 18.0248, lng: -77.8476, phones:["(876) 965-2222", "(876) 965-2740 "]},
+                        {name: "Santa Cruz Fire Station", location:"27 Horizon Park Housing Scheme ", lat: 18.05665, lng: -77.6990, phones:["(876) 966-2302"]},
+                        {name: "Junction Fire Station ", location:"Junction, St. Elizabeth ", lat: 17.9055, lng: -77.6064,  phones:[" (876) 965-8622 "]},
+                       
+                    ],
+                    hospitals: [
+                        {name:"Black River Hospital", location:"High Street, Black River", lat: 18.0268, lng: -77.8591, phones:["(876) 965-2712","965-9173"]}
+                    ]
+                },
+
+        "St. James": { police: [
+                        {name: "Adelphi Police Station", location: "8 Adelphi Main Road", lat: 18.4470, lng: -77.7930, phones:["(876) 912-1026"]},
+                        {name: "Barnett Street Police Station", location: "14 Barnett Street", lat:  18.4688, lng: -77.9193,  phones: ["(876) 952-2333", "(876) 952-3781"]},
+                        {name: "Mount Salem Police Station", location:"Mount Salem Road", lat: 18.4678, lng: -77.9097,  phones:["(876) 953-3572", "(876) 952-4997"]},
+                        {name: "Anchovy Police Station", location:"Anchovy Main Road", lat: 18.40693, lng: -77.93510, phones:["(876)956-4100"]},
+                        {name: "Barrett Town Police Station", location:"Little River Boulevard", lat:18.51481, lng: -77.80146, phones:["(876) 953-7899"]},
+                        {name: "Cambridge Police Station", location:" Ducketts Main Road", lat: 18.3168, lng: -77.9031,  phones: ["(876) 912-2266"]},
+                        {name: "Coral Gardens Police Station", location:"Rose Hall Main Road", lat: 18.5211, lng: -77.8644, phones:["(876)953-2229", "(876) 953-3665"]},
+                        {name: "Granville Police Station", location:"64 Chambers Drive", lat: 18.4480, lng: -77.9038, phones : ["(876) 952-3337"]},
+                        {name: "Spring Mount Police Station", location:"Spring Mount Main Road" , lat: 18.3993, lng: -77.8506, phones: ["(876) 424-8938 "]},
+                        {name: "Summit Police Station", location:"Sunset Boulevard", lat: 18.4906, lng: -77.9238, phones:["(876) 952-4823 ", "(876)952-2927", "(876)758-3573" ]},
+                        {name: "Sangster's Airport Police Station", location:"Donald Sangster Airport", lat:18.5053, lng: -77.9142,  phones:[ "(876) 952-2241"]},
+                        {name: "Freeport Police Station", location:"Alice Eldemire Drive", lat: 18.4586, lng: -77.9284,    phones:["(876) 684-9080"]},
+                       
+                    ],
+                    fire: [
+                        {name:"Montego Bay Fire Station (Area 4 HQ)" , location:" #1 Barnett Street", lat: 18.47094, lng: -77.9234, phones:["(876) 952-1098", " (876) 952-2311"]},
+                        {name: "Montego Bay Fireboat Station", location: " 1 Almond Way, Freeport, Montego Bay", lat: 18.4597, lng: -77.9401,  phones: ["(876) 952-2311"]},
+                    ],
+                    hospitals: [
+                        {name:"Cornwall Regional Hospital", location:"Mount Salem, Montego Bay", lat: 18.4705, lng: -77.9100, phones: ["(876) 952-5100"]}
+                    ]
+                },
+        "St. Mary": { police: [
+        {name:"Gayle Police Station", location:"Gayle Main Road, Gayle", lat: 18.3284, lng: -77.0078 , phones:["(876) 975-8112"]},
+        {name:"Highgate Police Station", location:"Highgate Main Street, Highgate", lat:18.2713, lng: -76.8902, phones:["(876) 992-2233"]},
+        {name:"Annotto Bay Police Station", location:"Annotto Bay Main Street, Annotto Bay", lat:18.2706, lng: -76.7727, phones:["(876) 996-2244"]},
+        {name:"Islington Police Station", location:"Islington Main Road, Islington", lat: 18.3053, lng: -76.8455, phones:["(876) 994-4444"]},
+        {name:"Richmond Police Station", location:"Richmond Main Road, Richmond", lat: 18.2461, lng: -76.8912, phones:["(876) 992-0000"]},
+        {name:"Belfield Police Station", location:"Belfield Main Road, Belfield", lat: 18.2617, lng: -76.8372, phones:["(876) 992-2444"]},
+        {name:"Oracabessa Police Station", location:"Oracabessa Main Road, Oracabessa", lat: 18.4044, lng: -76.9478,  phones:["(876) 975-3233"]},
+        {name:"Castleton Police Station", location:"Castleton Main Road, Junction Road, Castleton", lat: 18.1725, lng: -76.8230, phones:["(876) 996-4164"]},
+        {name:"Retreat Police Station", location:"Retreat Main Road, Retreat", lat: 18.3959, lng: -77.0253, phones:["(876) 996-3666"]},
+        {name:"Area 2 Police Headquarters", location:"North Coast Highway, Tower Isle", lat:18.4172, lng: -77.0263, phones:["(876) 975-5439"]},
+        {name:"Prospect Police Station", location:"Prospect Main Road, Prospect", lat: 18.4191, lng: -77.0630, phones:["(876) 994-1487"]},
+
+
+    ],
+    fire: [
+        {name:"Port Maria Fire Station", location:"Stennetts Street, Port Maria", lat:18.3665, lng: -76.8940, phones:["(876) 994-2285"]},
+        {name:"Annotto Bay Fire Station", location:"Annotto Bay Main Street, Annotto Bay", lat: 18.2707, lng: -76.7800, phones:["(876) 996-2216"]},
+
+
+    ],
+    hospitals: [
+        {name:"Annotto Bay Hospital", location:"Annotto Bay, St. Mary", lat: 18.2733, lng: -76.7607, phones:["(876) 996-2222"]},
+        {name:"Port Maria Hospital", location:"Port Maria Hospital & Health Complex, Trinity, Port Maria", lat: 18.3579, lng: -76.8938, phones:["(876) 994-2228"]}
+    ]
+},
+
+        "St. Thomas": { police: [  {name:"Morant Bay Police Station", location:" 7 South Street, Morant Bay", lat:17.8812, Lng:-76.4094, phones:["(876)982-2686"]},
+                    {name:"Yallahs Police Station", location:"54 Market Road, Yallahs",Lat:17.8751, Lng:-76.5650 ,phones:["(876) 982-5075 "]},
+                    {name:"Port Morant Police Station", location:" Chapel Hill, Port Morant, St. Thomas ", Lat:17.8882, Lng:-76.3291, phones:["(876) 982-8220"]},
+                    {name:"Seaforth Police Station", location:"Seaforth Main Road, Seaforth", Lat:17.9385, Lng:-76.4571 ,phones:["(876) 982-4280", "(876) 982-4537"]},
+                    {name:"Trinityville Police Station", location:"  Trinityville Main Road, Trinityville", Lat:17.9603, Lng:-76.5219,phones:["(876) 982-7392 "]},
+                    {name:"Bath Police Station", location:"Ginger Hall Main Road", Lat:17.9685, Lng:-76.3595, phones:["(876) 703-4704"]},
+                    {name:"Cedar Valley Police Station", location:" Cedar Valley Road",Lat:17.9951, Lng:-76.5883, phones:["(876) 703-0035 "]},
+                    {name:"Golden Grove Police Station", location:"Golden Grove Main Road", Lat:17.9342, Lng:-76.2705, phones:["(876) 706-0845", " (876) 982-2733 "]},
+                    {name:"Llandewey Police Station", location:" 16 Llandewey Main Road", Lat:17.9621, Lng:-76.6057, phones:[" (876) 733-0487 "]},
+                    {name:"St.Thomas Police Station (HQ)", location:"7 South Street, Morant Bay", Lat:17.8954, Lng:-76.4097, phones:[" (876) 982-1016 "]}
+            ],
+             fire: [{name:"Morant Bay Fire Station", location:"1 Debtors Lane, Morant Bay", Lat:17.8813, Lng:-76.4078, phones:[" (876) 982-2268"]},
+                    {name:"Yallahs Fire Station", location:"Southaven, Yallahs", Lat:17.8804,Lng:-76.5842, phones:["(876) 982-5600", "(876) 982-5608"]}
+            ], 
+            hospitals: [{name:"Princess Margaret Hospital", location:"54 Lyssons Road, Morant Bay", Lat:17.8807, Lng:-76.3905, phones:["(876) 982-2304"]},
+] },
+        "Trelawny": {  police: [
+                        {name:"Falmouth Police Station", location:"12 Rodney Street, Falmouth", lat: 18.4964, lng: -77.6565, phones:["(876) 954-3222", "(876) 954-3271"]},
+                        {name:"Duncans Police Station", location:" Duncans Main Road, Duncans ", lat:18.4684, lng: -77.5354,  phones:[" 876-954-2433"]},
+                        {name:"Rio Bueno Police Station", location:"Rio Bueno Main Road, Rio Bueno", lat: 18.4660, lng: -77.4573,  phones:["876-954-0058"]},
+                        {name:"Ulster Spring Police Station", location: "Ulster Spring Main Road, Ulster Spring", lat: 18.3099, lng: -77.5218,  phones:["(876) 839-2993",]},
+                        {name:"Clarke's Town Police Station", location:"Clark's Town, Trelawny", lat:18.4220, lng: -77.5434,  phones:[" 876-954-1080"]},
+                       
+                    ],
+                    fire: [
+                        {name: "Falmouth Fire Station", location:"7 Lower Parade Street, Falmouth", lat: 18.4911, lng: -77.6518, phones:["(876) 954-3230"]},
+             
+                    ],
+                    hospitals:[
+                        {name:"Falmouth Public General Hospital", location:"Rodney Street, Falmouth,", lat: 18.4966, lng: -77.6611, phones:["(876) 954-3255 "]}
+
+
+                    ]
+                },
+
+        "Westmoreland": { police: [ {name: "Savanna-la-mar Police Station (Division HQ)", location: "Great George Street", lat:"18.2188", lng:"-78.1333", phones: [" (876) 955-2536 "]},
+                    {name: "Negril Police Station", location: "Nompriel Main Road,Negril",lat:"18.2789", lng:"-78.3431",phones: [" (876) 975-4268 "]},
+                    {name: "Bethel Town Police Station", location: "Bethel Town Main Road, Bethel Town, Westmoreland", lat:"18.2964",lng:"-77.9515", phones: [" (876) 957-1658",]},
+                    {name: "Darliston Police Station", location: "Darliston Main Road, Darliston, Westmoreland",lat:"18.2351",lng:"-77.9753", phones: ["(876) 955-0088"]},
+                    {name: "Whitehouse Police Station", location: "White House Main Road, Whitehouse, Westmoreland, Jamaica", lat:"18.0907", lng:"-77.9659", phones: ["(876) 963-5220"]},
+                    {name: "Bluefields Police Station", location: " Bluefields Main Road, Bluefields, Westmoreland, Jamaica", lat:"18.1686", lng:"-78.0282", phones: [" (876) 423-4221", "(876) 955-8156 "]},
+                    {name: "Frome Police Station", location: "Frome Main Road, Frome, Westmoreland", lat:"18.2921",lng:"-78.1507",  phones: ["(876) 955-6294 "]},
+                    {name: "Little London Police Station", location: "Main Road, Little London, Westmoreland,", lat:"18.2449", lng:"-78.2169", phones: [" (876) 955-7449"]},
+                    {name: "Grange Hill Police Station", location: "Grange Hill Main Road, Grange Hill, Westmoreland", lat:"18.3104",lng:"-78.1822", phones: [" (876) 955-1375"]},
+                    {name: "Whithorn Police Station", location: "Whithorn, Westmoreland", lat:"18.2611", lng:"-78.0396", phones: ["(876) 957-7713", "(876) 822-4006"]},
+                   
+                ],
+            fire: [ {name: "Savanna-la-mar Fire Station", location: "71 Dalling Street (Darling St), Savanna-la-Mar", lat:"18.2153",lng:"-78.1349", phones: ["(876) 955-3331"]},
+                    {name: "Negril Fire Station", location: "Archer Road (Redground / Negril Centre), Negril",lat:"18.2785", lng:"-78.3441" , phones: [" (876) 957-4242"]},
+                   
+                ], 
+            hospitals: [{name: "Savanna-la-Mar Public General Hospital", location: "Barracks Road, Savanna-la-Mar",lat:"18.2261", lng:"-78.1289", phones: ["(876) 955-2533"]},
+                   
+] }
+    }
+ }, 
+
+    Montserrat: {
+        codedial: "+1664",
+        VerifiedLast: "2026-11-18",
+        emergencyline: {all:"999", policeline: "+1 (664) 491-2555"},
+        Parishes: {
+            "Saint George": { 
+                police: [], 
+                fire: [], 
+                hospitals: []
+            },
+            "Saint Peter": {
+                        police: [
+                            {name: "Royal Montserrat Police Force Headquarters", location: "Government Headquarters complex,Brades,Montserrat", lat: 16.7934, lng: -62.2107, phones:["+1 (664) 491-2555", "+1 (664) 491-2556" ]},
+                            {name: "Salem Police station", location: "Salem Gate South", lat: 16.7494, lng: -62.2228, phones:[], note: "Calls are routed through RMPS Police Headquarters"}
+
+
+                        ],
+                        fire: [
+                            {name: "Brades Fire station/Fire Headquarter", location: "Farara Plaza, Brades", lat: 16.79313, lng: -62.21123, phones: ["+1 (664) 491-7790"]}
+                        ],
+                        hospitals: [
+                            {name: "Glendon Hospital", location:"Main Road, St.John's", lat: 16.78915, lng: -62.1924, phones: [ "+1 (664) 491-2552", "+1 (664) 491-2836", "+1 (664) 491-2843", "Casualty/A&E: +1 (664) 491-2802"]}
+                        ]
+                   
+                    },
+                    "Saint Anthony": {
+                        police: [],
+                        fire: [],
+                        hospitals: []
+                           
+                       
+                    }
+                }
+            }
+    };
+function phoneLink(phoneText, codedial) {
+    const digits = phoneText.replace(/\D/g, "");
+    const a = document.createElement("a");
+    let dial; 
+    if (digits.length<=4) dial = digits; 
+    else if (digits.length ===7) dial = codedial+digits; 
+    else if (digits.length === 10) dial = "+1"+ digits; 
+    else dial = "+" + digits; 
+    a.href ="tel:" + dial;
+    a.textContent = phoneText.replace(/\s/g,""); 
+    return a;
+}
+
+function addGroup(box, title, items, codedial) {
+    if (!items || items.length === 0) return;
+
+    const h = document.createElement("h3");
+    h.textContent = title;
+    box.appendChild(h);
+
+    items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "service";
+
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+        card.appendChild(name);
+
+        const loc = document.createElement("div");
+        loc.textContent = (item.location || "").trim();
+        card.appendChild(loc);
+
+        (item.phones || []).forEach(p => {
+            const line = document.createElement("div");
+            line.appendChild(phoneLink(p, codedial));
+            card.appendChild(line);
+        });
+
+        if (item.ambulance) {
+            const line = document.createElement("div");
+            line.append("Ambulance: ");
+            line.appendChild(phoneLink(item.ambulance, codedial));
+            card.appendChild(line);
+        }
+
+        if (item.note) {
+            const line = document.createElement("div");
+            line.textContent = item.note;
+            card.appendChild(line);
+        }
+
+        box.appendChild(card);
+    });
+}
+
+function renderDirectory(user) {
+    const box = document.getElementById("directory-list");
+    box.innerHTML = "";
+    document.getElementById("directory-place").textContent = user.parish + ", " + user.country;
+
+    const countryData = directory[user.country];
+    if (!countryData) {
+        box.textContent = "Directory coming soon for this country.";
+        return;
+    }
+
+    const national = [];
+    const e = countryData.emergencyline || {}; 
+    if (e.all) national.push({ name: "Emergency (all services)", location: "", phones: [e.all]}); 
+    if (e.policeline) national.push ({ name: "Police Line", location: "", phones: [e.policeline]}); 
+    if (e.ambulance) national.push ({ name:"Ambulance", location:"", phones:[e.ambulance]}); 
+    if (e.fire) national.push ({ name: "Fire", location:"", phones: [e.fire]});
+    addGroup (box, "Emergency lines", national, countryData.codedial);
+
+    const p = (countryData.Parishes || {})[user.parish] || {};
+    addGroup(box, "Police", p.police, countryData.codedial);
+    addGroup(box, "Fire", p.fire, countryData.codedial);
+    addGroup(box, "Hospitals", p.hospitals, countryData.codedial);
+
+    const hasAny = ["police", "fire", "hospitals"].some(k => p[k] && p[k].length > 0);
+    if (!hasAny) {
+        const note = document.createElement("p");
+        note.textContent = "No local numbers listed yet for this parish.";
+        box.appendChild(note);
+    }
+
+    if (countryData.VerifiedLast) {
+        const verified = document.createElement("p");
+        verified.textContent = "Last verified: " + countryData.VerifiedLast;
+        box.appendChild(verified);
+    }
+}
+    country.addEventListener("change", ()=> { 
+        const list = parishes[country.value]; 
+        parish.innerHTML = '<option value="">Select a parish</option>';
+
+        if (list) { 
+            list.forEach(parishName => { 
+                const option = document.createElement("option"); 
+                option.value = parishName; 
+                option.textContent = parishName; 
+                parish.appendChild(option);
+            }); 
+            parishContainer.style.display = "block"; 
+            parish.required = true; 
+        } else { 
+            parishContainer.style.display = "none"; 
+            parish.required = false; 
+        }
+    }); 
+    const app = document.getElementById("app");
+const sidebar = document.getElementById("sidebar");
+
+function showError(where, err) {
+    console.error(where + " failed:", err);
+    const p = document.createElement("pre");
+    p.style.cssText = "color:red;font-size:12px;text-align:left;white-space:pre-wrap;";
+    p.textContent = where + " failed: " + err.message;
+    document.body.prepend(p);
+}
+
+function showApp(user) {
+    currentUser = user;
+    homepage.hidden = true;
+    signup.hidden = true;
+    app.hidden = false;
+    showView("view-map");
+
+    try {
+        document.getElementById("card-name").textContent = user.firstname + " " + user.lastname;
+        document.getElementById("card-username").textContent = user.username;
+        document.getElementById("card-age").textContent = user.age;
+        document.getElementById("card-dob").textContent = user.dateofbirth;
+        document.getElementById("card-gender").textContent =
+            user.gender === "Other" && user.othergender ? user.othergender : user.gender;
+        document.getElementById("card-height").textContent = user.approximateheight;
+        document.getElementById("card-weight").textContent = user.approximateweight;
+        document.getElementById("card-location").textContent = user.parish + ", " + user.country;
+        document.getElementById("userprofile").textContent = "👤" + user.username;
+    } catch (err) { showError("card", err); }
+
+    try { renderDirectory(user); } catch (err) { showError("directory", err); }
+    try { openMap(); } catch (err) { showError("map", err); }
+}
+
+document.getElementById("signup-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.target));
+    data.age = calculateAge(data.dateofbirth);
+    localStorage.setItem("caripinUser", JSON.stringify(data));
+    showApp(data);
+});
+
+function showView(id) {
+    document.querySelectorAll(".view").forEach(v => v.hidden = true);
+    document.getElementById(id).hidden = false;
+    sidebar.hidden = true;
+}
+
+const editCountry = document.getElementById("edit-country");
+const editParish = document.getElementById("edit-parish");
+
+function fillEditParishes(countryName, selected) {
+    editParish.innerHTML = '<option value="">Select a parish</option>';
+    (parishes[countryName] || []).forEach(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        editParish.appendChild(option);
+    });
+    editParish.value = selected || "";
+}
+
+editCountry.addEventListener("change", () => {
+    fillEditParishes(editCountry.value, "");
+});
+
+document.getElementById("edit-info").addEventListener("click", () => {
+    const user = JSON.parse(localStorage.getItem("caripinUser"));
+    if (!user) return;
+
+    document.getElementById("edit-firstname").value = user.firstname;
+    document.getElementById("edit-lastname").value = user.lastname;
+    document.getElementById("edit-username").value = user.username;
+    document.getElementById("edit-dob").value = user.dateofbirth;
+    document.getElementById("edit-age").value = calculateAge(user.dateofbirth);
+    document.getElementById("edit-gender").value = user.gender;
+
+    const other = document.getElementById("edit-othergender");
+    other.value = user.othergender || "";
+    other.style.display = user.gender === "Other" ? "block" : "none";
+
+    document.getElementById("edit-height").value = user.approximateheight;
+    document.getElementById("edit-weight").value = user.approximateweight;
+
+    editCountry.value = user.country;
+    fillEditParishes(user.country, user.parish);
+
+    showView("view-edit");
+});
+
+document.getElementById("edit-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const user = JSON.parse(localStorage.getItem("caripinUser"));
+    if (!user) return;
+
+    user.country = editCountry.value;
+    user.parish = editParish.value;
+    user.age = calculateAge(user.dateofbirth);
+
+    localStorage.setItem("caripinUser", JSON.stringify(user));
+    showApp(user);                 // refreshes the safety card, directory and username
+    showView("view-map");          // goes to the Pin It page
+    if (typeof openMap === "function") openMap();   // only matters once the map code is added
+});
+
+let resetArmed = false;
+
+document.getElementById("reset").addEventListener("click", (event) => {
+    const btn = event.currentTarget;
+
+    if (!resetArmed) {
+        resetArmed = true;
+        btn.textContent = "Tap again to confirm";
+        setTimeout(() => {
+            resetArmed = false;
+            btn.textContent = "Reset my Information";
+        }, 4000);
+        return;
+    }
+
+    resetArmed = false;
+    btn.textContent = "Reset my Information";
+
+    localStorage.removeItem("caripinUser");
+    currentUser = null;
+
+    document.getElementById("signup-form").reset();
+    ageInput.value = "";
+    parishContainer.style.display = "none";
+    document.getElementById("othergender").style.display = "none";
+
+    sidebar.hidden = true;
+    app.hidden = true;
+    homepage.hidden = true;
+    signup.hidden = false;
+});
+document.getElementById("menu-button").addEventListener("click", () => {
+    sidebar.hidden = !sidebar.hidden;
+});
+document.getElementById("backbutton").addEventListener("click",() => { 
+    sidebar.hidden = true; 
+});
+
+sidebar.querySelectorAll("button[data-view]").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".view").forEach(v => v.hidden = true);
+        document.getElementById(btn.dataset.view).hidden = false;
+        sidebar.hidden = true;
+        if (btn.dataset.view === "view-map") openMap(); 
+    });
+});
+let currentUser = null; 
+let map = null, pinLayer = null, serviceLayer = null, mapCountry = null, placing = false; 
+
+const countryBounds = {
+    "Jamaica": [[17.70, -78.40], [18.55, -76.17]], 
+    "Montserrat": [[16.66, -62.26], [16.84, -62.13]], 
+    "Grenada": [[11.97, -61.82], [12.56, -61.35]]
+};
+
+const hazards = { 
+    flood: { label: "Flooding", emoji: "🌊"},
+    surge: {label: "Storm Surge", emoji: "⛈️" }, 
+    landslide: { label: "Landslide", emoji: "⛰️"}, 
+    earthquake: { label: "Earthquake Damage", emoji: " 🏚️ "}, 
+    volcano: { label: "Volcanic Activity", emoji: "🌋"}, 
+    sinkhole: { label: "Sinkhole", emoji: "🕳️"},
+    wildfire: { label: "Bush/Wildfire", emoji: "🔥"}, 
+    erosion: {label: "Coastal erosion", emoji: "🏜️"}, 
+    downed_Lightpole: {label: "Downed LightPole", emoji: "⚡"},
+}; 
+
+const serviceTypes = { 
+    police: { label: "Police", emoji: "🚓"}, 
+    fire: { label: "Fire", emoji: "🚒"}, 
+    hospitals: {label: "Hospital", emoji: "🚑"}, 
+
+}; 
+const samplePins = {
+    "Jamaica": {
+        "Clarendon":             [{ type: "flood",     note: "Sample: Rio Minho overflow near May Pen",   lat: 17.9640, lng: -77.2450 }],
+        "Hanover":               [{ type: "surge",     note: "Sample: storm surge risk at Lucea harbour", lat: 18.4500, lng: -78.1700 }],
+        "Kingston & St. Andrew": [{ type: "flood",     note: "Sample: gully flooding near Half Way Tree", lat: 18.0120, lng: -76.7990 }],
+        "Manchester":            [{ type: "sinkhole",  note: "Sample: sinkhole near Mandeville",          lat: 18.0417, lng: -77.5053 }],
+        "Portland":              [{ type: "landslide", note: "Sample: landslide-prone road near Port Antonio", lat: 18.1760, lng: -76.4500 }],
+        "St. Ann":               [{ type: "landslide", note: "Sample: landslide-prone hillside near Ocho Rios", lat: 18.3900, lng: -77.1000 }],
+        "St. Catherine":         [{ type: "flood",     note: "Sample: flooding near Spanish Town",        lat: 17.9910, lng: -76.9570 }],
+        "St. Elizabeth":         [{ type: "surge",     note: "Sample: coastal surge risk at Black River", lat: 18.0260, lng: -77.8480 }],
+        "St. James":             [{ type: "flood",     note: "Sample: road floods after heavy rain",      lat: 18.4700, lng: -77.9200 }],
+        "St. Mary":              [{ type: "flood",     note: "Sample: river flooding near Port Maria",    lat: 18.3700, lng: -76.8900 }],
+        "St. Thomas":            [{ type: "surge",     note: "Sample: storm surge risk at Morant Bay",    lat: 17.8810, lng: -76.4090 }],
+        "Trelawny":              [{ type: "surge",     note: "Sample: coastal surge risk at Falmouth",    lat: 18.4930, lng: -77.6560 }],
+        "Westmoreland":          [{ type: "surge",     note: "Sample: storm surge near Savanna-la-Mar",   lat: 18.2190, lng: -78.1330 }]
+    },
+    "Grenada": {
+        "Saint George":      [{ type: "flood",     note: "Sample: low-lying road floods",       lat: 12.0560, lng: -61.7490 }],
+        "Saint Andrew":      [{ type: "landslide", note: "Sample: landslide-prone hillside",    lat: 12.1250, lng: -61.6250 }],
+        "Saint David":       [{ type: "landslide", note: "Sample: landslide-prone hillside",    lat: 12.0100, lng: -61.6700 }],
+        "Saint John":        [{ type: "surge",     note: "Sample: coastal storm surge risk",    lat: 12.1700, lng: -61.7300 }],
+        "Saint Mark":        [{ type: "landslide", note: "Sample: landslide-prone hillside",    lat: 12.2000, lng: -61.7000 }],
+        "Saint Patrick":     [{ type: "surge",     note: "Sample: coastal storm surge risk",    lat: 12.2250, lng: -61.6400 }],
+        "Carriacou":         [{ type: "surge",     note: "Sample: coastal storm surge risk",    lat: 12.4800, lng: -61.4500 }],
+        "Petite Martinique": [{ type: "erosion",   note: "Sample: coastal erosion",             lat: 12.5180, lng: -61.3850 }]
+    },
+    "Montserrat": {
+        "Saint George": [{ type: "volcano", note: "Sample: volcanic activity zone",    lat: 16.7200, lng: -62.1800 }],
+        "Saint Peter":  [{ type: "flood",   note: "Sample: ghaut flooding after rain", lat: 16.7930, lng: -62.2110 }],
+        "Saint Anthony":[{ type: "erosion", note: "Sample: coastal erosion",           lat: 16.7600, lng: -62.2200 }]
+    }
+};
+
+// all sample pins for a country, flattened (used to draw them on the map)
+function samplesFor(countryName) {
+    return Object.values(samplePins[countryName] || {}).flat();
+}
+
+const hazardSelect = document.getElementById("hazard-type"); 
+Object.entries(hazards).forEach(([key,h]) => {
+    const o = document.createElement("option"); 
+    o.value = key; 
+    o.textContent = h.emoji + " " + h.label; 
+    hazardSelect.appendChild(o); 
+}); 
+
+let serverPins = [];
+
+function myPinIds() {            // ids of pins this device created (so you can only delete your own)
+    try { return JSON.parse(localStorage.getItem("caripinMine")) || []; }
+    catch (e) { return []; }
+}
+
+async function fetchPins() {
+    try {
+        const res = await fetch("/api/pins?country=" + encodeURIComponent(mapCountry));
+        serverPins = await res.json();
+    } catch (e) {
+        console.error("Could not load pins", e);
+    }
+}
+function drawPin(pin) {
+    const h = hazards[pin.type];
+    const icon = L.divIcon({
+        html: '<div class="pin">' + h.emoji + '</div>',
+        className: "",
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+
+    const box = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = h.label;
+    box.appendChild(title);
+
+    if (pin.note) {
+        const note = document.createElement("div");
+        note.textContent = pin.note;
+        box.appendChild(note);
+    }
+    if (pin.time) {
+        const when = document.createElement("div");
+        when.textContent = new Date(pin.time).toLocaleDateString();
+        box.appendChild(when);
+    }
+    if (!pin.sample && myPinIds().includes(pin.id)) {
+    const del = document.createElement("button");
+    del.textContent = "Delete pin";
+    del.addEventListener("click", async () => {
+        await fetch("/api/pins/" + pin.id, { method: "DELETE" });
+        renderPins();
+    });
+    box.appendChild(del);
+}
+
+    const marker =L.marker([pin.lat, pin.lng], {icon}).bindPopup(box).addTo(pinLayer);
+    marker.on("click", () => selectPin(pin)); 
+}
+async function renderPins() {
+    await fetchPins();
+    pinLayer.clearLayers();
+    samplesFor(mapCountry).forEach(p => drawPin({...p, sample: true}));
+    serverPins.forEach(p => drawPin({...p, time: p.created * 1000}));
+}
+function setPlacing(on) {
+    placing = on;
+    const btn = document.getElementById("placepin-button");
+    btn.classList.toggle("active", on);
+    btn.textContent = on ? "Tap the map to drop your pin (tap here to cancel)" : "📍 Add a pin";
+    document.getElementById("map").classList.toggle("placing", on);
+}
+
+// ---------- nearby services ----------
+function collectServices(countryName) {
+    const data = directory[countryName];
+    const out = [];
+    if (!data) return out;
+    Object.values(data.Parishes || {}).forEach(parishData => {
+        Object.keys(serviceTypes).forEach(type => {
+            (parishData[type] || []).forEach(item => {
+                const lat = Number(item.lat ?? item.Lat);
+                const lng = Number(item.lng ?? item.Lng);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    out.push({ ...item, lat, lng, type: type, codedial: data.codedial });
+                }
+            });
+        });
+    });
+    return out;
+}
+
+function distanceKm(lat1, lng1, lat2, lng2) {
+    const R = 6371, rad = Math.PI / 180;
+    const dLat = (lat2 - lat1) * rad, dLng = (lng2 - lng1) * rad;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+// straight-line distance x 1.4 for winding roads, at an assumed 35 km/h average
+function minutesAway(km) {
+    return Math.max(1, Math.round((km * 1.4 / 35) * 60));
+}
+function selectPin(pin) { 
+    const h = hazards[pin.type]; 
+    const label = h.emoji + " " + h.label + (pin.note ? " ("+ pin.note +")" :"");
+    renderNearby({lat:pin.lat, lng: pin.lng, label: label}); 
+}
+
+function showHelpPrompt() { 
+    serviceLayer.clearLayers(); 
+    document.getElementById("nearby-list").innerHTML=""; 
+    document.getElementById("nearby-note").textContent = "Tap a pin on the map to see the nearest help from it.";
+}
+function renderNearby(spot) {
+    serviceLayer.clearLayers();
+    const box = document.getElementById("nearby-list");
+    const noteEl = document.getElementById("nearby-note");
+    box.innerHTML = "";
+
+    const all = collectServices(mapCountry).map(s => ({
+        ...s, km: distanceKm(spot.lat, spot.lng, s.lat, s.lng)
+    }));
+
+    if (all.length === 0) {
+        noteEl.textContent = "No services with map locations listed yet for this country.";
+        return;
+    }
+    noteEl.textContent = "Measured from: " + spot.label + ". Times are approximate.";
+
+    L.circleMarker([spot.lat, spot.lng], { radius: 18, color: "#065958", weight: 3, fillOpacity: 0, interactive: false })
+        .addTo(serviceLayer);
+
+    all.forEach(s => {
+        const icon = L.divIcon({
+            html: '<div class="pin">' + serviceTypes[s.type].emoji + '</div>',
+            className: "", iconSize: [30, 30], iconAnchor: [15, 15]
+        });
+        const popup = document.createElement("div");
+        const nm = document.createElement("strong");
+        nm.textContent = s.name;
+        popup.appendChild(nm);
+        (s.phones || []).forEach(p => {
+            const line = document.createElement("div");
+            line.appendChild(phoneLink(p, s.codedial));
+            popup.appendChild(line);
+        });
+        L.marker([s.lat, s.lng], { icon }).bindPopup(popup).addTo(serviceLayer);
+    });
+
+    Object.keys(serviceTypes).forEach(type => {
+        const nearest = all.filter(s => s.type === type).sort((a, b) => a.km - b.km).slice(0, 2);
+        if (nearest.length === 0) return;
+
+        const h = document.createElement("h3");
+        h.textContent = serviceTypes[type].emoji + " " + serviceTypes[type].label;
+        box.appendChild(h);
+
+        nearest.forEach(s => {
+            const card = document.createElement("div");
+            card.className = "service";
+
+            const nm = document.createElement("strong");
+            nm.textContent = s.name;
+            card.appendChild(nm);
+
+            const eta = document.createElement("div");
+            eta.textContent = "≈ " + minutesAway(s.km) + " min away (" + s.km.toFixed(1) + " km straight line)";
+            card.appendChild(eta);
+
+            (s.phones || []).forEach(p => {
+                const line = document.createElement("div");
+                line.appendChild(phoneLink(p, s.codedial));
+                card.appendChild(line);
+            });
+            box.appendChild(card);
+        });
+    });
+}
+
+// ---------- map ----------
+function buildMap(countryName) {
+    if (map) { map.remove(); }
+    mapCountry = countryName;
+    const bounds = countryBounds[countryName];
+
+    map = L.map("map", { maxBounds: bounds, maxBoundsViscosity: 1.0 });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    map.fitBounds(bounds);
+    map.setMinZoom(map.getZoom());   // can't zoom out past the country
+
+    pinLayer = L.layerGroup().addTo(map);
+    serviceLayer = L.layerGroup().addTo(map);
+
+    map.on("click", async (e) => {
+    if (!placing) return;
+    const body = {
+        country: mapCountry,
+        type: hazardSelect.value,
+        note: document.getElementById("hazard-note").value.trim(),
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+    };
+    setPlacing(false);
+    try {
+        const res = await fetch("/api/pins", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error("save failed");
+        const saved = await res.json();
+        localStorage.setItem("caripinMine", JSON.stringify(myPinIds().concat(saved.id)));
+        await renderPins();
+        selectPin({ ...body, id: saved.id });
+        document.getElementById("hazard-note").value = "";
+        } catch (err) {
+        alert("Could not save your pin. Check your connection and try again.");
+    }
+});
+
+    renderPins();
+}
+function openMap() {
+    if (!currentUser) return;
+    document.getElementById("map-place").textContent = currentUser.country;
+    if (!map || mapCountry !== currentUser.country) buildMap(currentUser.country);
+    else { map.invalidateSize(); renderPins(); }
+    setPlacing(false);
+    
+    const mine = (samplePins[mapCountry] || {})[currentUser.parish] || [];
+    const first = mine[0]
+    if (first) {
+        selectPin(first);
+        map.setView([first.lat, first.lng], 12);
+    } else {
+        showHelpPrompt();
+    }
+}
+document.getElementById("placepin-button").addEventListener("click", () => setPlacing(!placing));
+const saved = localStorage.getItem("caripinUser");
+if (saved) {
+    showApp(JSON.parse(saved));
+} else if (sessionStorage.getItem("goToSignup")) {
+    sessionStorage.removeItem("goToSignup");
+    homepage.hidden = true;
+    signup.hidden = false;
+}
+setInterval(() => {
+    if (map && !document.getElementById("view-map").hidden) renderPins();
+}, 60000);
+    </script> 
+</body>
+</html>
