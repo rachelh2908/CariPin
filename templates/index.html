@@ -291,6 +291,18 @@
     outline: 3px solid #0c8280; 
     outline-offset: 3px;
 }
+#share-card {
+    margin-top: 16px;
+    padding: 10px 16px;
+    border: 3px solid #1d8987;
+    border-radius: 5px;
+    background: beige;
+    color: #065958;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+}
+#share-note { font-size: 0.85rem; color: #065958; }
 #view-map{
     width: 100%; 
     max-width: 500px; 
@@ -455,6 +467,9 @@
             <p>Height: <span id="card-height"></span> cm | Weight: <span id="card-weight"></span> kg</p>
             <p>Location: <span id="card-location"></span></p>
         </div>
+    <button type = "button" id="share-card">Share my Safety Card</button>
+    <p id="share-note"></p>
+
     </div>
     <div id="view-edit" class="view" hidden> 
         <h2>Edit My Information</h2>
@@ -1569,6 +1584,33 @@ if (saved) {
     homepage.hidden = true;
     signup.hidden = false;
 }
+document.getElementById("share-card").addEventListener("click", async () => {
+    const u = currentUser;
+    if (!u) return;
+    const note = document.getElementById("share-note");
+    const gender = u.gender === "Other" && u.othergender ? u.othergender : u.gender;
+    let text = "CariPin Safety Card\n" +
+        u.firstname + " " + u.lastname + " (@" + u.username + ")\n" +
+        "Age: " + u.age + " | Gender: " + gender + "\n" +
+        "Height: " + u.approximateheight + " cm | Weight: " + u.approximateweight + " kg\n" +
+        "Location: " + u.parish + ", " + u.country;
+
+    try {   // add exact location if the person allows it
+        const pos = await new Promise((resolve, reject) =>
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+        text += "\nMap: https://maps.google.com/?q=" + pos.coords.latitude + "," + pos.coords.longitude;
+    } catch (e) { /* location denied or unavailable: share without it */ }
+
+    try {
+        if (navigator.share) {
+            await navigator.share({ title: "My Safety Card", text: text });
+        } else {
+            await navigator.clipboard.writeText(text);
+            note.textContent = "Copied. Paste it into a message.";
+        }
+    } catch (e) { /* the person closed the share menu */ }
+});
+
 setInterval(() => {
     if (map && !document.getElementById("view-map").hidden) renderPins();
 }, 60000);
