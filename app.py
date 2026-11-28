@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import sqlite3, time, uuid, os
 
 app = Flask(__name__)
-DB = os.path.join(os.path.dirname(__file__), "pins.db")   # the file where pins are saved
+DB = os.path.join(os.path.dirname(__file__), "pins.db")   
 LIFETIME = 24 * 60 * 60                                   # a pin lasts 24 hours
 HAZARDS = {"flood", "surge", "landslide", "earthquake", "volcano",
            "sinkhole", "wildfire", "erosion", "downed_Lightpole"}
@@ -22,7 +22,7 @@ with get_db() as con:
 def home():
     return render_template("index.html")
 
-@app.get("/api/pins")                       # "give me the active pins"
+@app.get("/api/pins")                       # gets active pins
 def list_pins():
     country = request.args.get("country")
     with get_db() as con:
@@ -30,7 +30,7 @@ def list_pins():
                            (country, time.time())).fetchall()
     return jsonify([dict(r) for r in rows])
 
-@app.post("/api/pins")                      # "save this new pin"
+@app.post("/api/pins")                      # saves new pins
 def add_pin():
     d = request.get_json()
     if d.get("type") not in HAZARDS:
@@ -43,7 +43,7 @@ def add_pin():
                      float(d["lat"]), float(d["lng"]), now, now + LIFETIME))
     return jsonify({"id": pin_id}), 201
 
-@app.delete("/api/pins/<pin_id>")           # "remove this pin"
+@app.delete("/api/pins/<pin_id>")           # used to remove a pin
 def delete_pin(pin_id):
     with get_db() as con:
         con.execute("DELETE FROM pins WHERE id = ?", (pin_id,))
